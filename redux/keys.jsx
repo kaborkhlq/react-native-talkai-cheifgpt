@@ -1,0 +1,29 @@
+export default {
+    WP_URL: 'https://chiefgpt.cloud',
+
+    OpenAIChat_SUCCESS: 'OpenAIChat_SUCCESS',
+    OpenAIChat_REQUEST: 'OpenAIChat_REQUEST',
+    OpenAIChat_FAILURE: 'OpenAIChat_FAILURE',
+
+    OpenAIWriter_SUCCESS: 'OpenAIWriter_SUCCESS',
+    OpenAIWriter_REQUEST: 'OpenAIWriter_REQUEST',
+    OpenAIWriter_FAILURE: 'OpenAIWriter_FAILURE',
+
+    OpenAIPrompt_SUCCESS: 'OpenAIPrompt_SUCCESS',
+    OpenAIPrompt_REQUEST: 'OpenAIPrompt_REQUEST',
+    OpenAIPrompt_FAILURE: 'OpenAIPrompt_FAILURE',
+
+    SIGN_IN_SUCCESS: 'SIGN_IN_SUCCESS',
+    SIGN_IN_REQUEST: 'SIGN_IN_REQUEST',
+    SIGN_IN_FAILURE: 'SIGN_IN_FAILURE',
+
+    SIGN_UP_SUCCESS: 'SIGN_UP_SUCCESS',
+    SIGN_UP_REQUEST: 'SIGN_UP_REQUEST',
+    SIGN_UP_FAILURE: 'SIGN_UP_FAILURE',
+
+    SIGN_OUT_SUCCESS: 'SIGN_OUT_SUCCESS',
+    SIGN_OUT_REQUEST: 'SIGN_OUT_REQUEST',
+    SIGN_OUT_FAILURE: 'SIGN_OUT_FAILURE',
+
+    UPDATE_CREDIT : 'UPDATE_CREDIT',
+}
