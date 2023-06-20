@@ -6,7 +6,13 @@ const initialState = {
     IS_FAILURE: false,
 
     data: {
-        username: '1234'
+        credit: 0,
+        email: "beautifulworld820.1@gmail.com",
+        emailVerifed: true,
+        phone: null,
+        photo: "https://lh3.googleusercontent.com/a/AAcHTtfTRSl7yvTiJlAohzD66QBp_sNzOSpdzY8X3v8X=s96-c",
+        uid: "nlbXrQ3DouQYzDlNhKfEZ0Rakad2",
+        username: "Beautiful"
     },
     service: '',
 }

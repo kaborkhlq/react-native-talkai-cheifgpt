@@ -206,6 +206,7 @@ const SignIn = (props) => {
                     </TouchableOpacity>
                 </View>
                 <Loading loading={loading} />
+                <Toast />
             </ImageBackground>
         </View>
     );

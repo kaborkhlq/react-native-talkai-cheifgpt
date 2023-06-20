@@ -4,6 +4,7 @@ import LottieView from 'lottie-react-native';
 import useCustomerInfo from '../redux/useCustomerInfo';
 import { useDispatch, useSelector } from 'react-redux';
 import { useRewardedAd } from 'react-native-google-mobile-ads';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 import { updateCredit } from '../redux/actions/auth.action';
 import Config from '../redux/config';
@@ -15,93 +16,39 @@ const adUnit = Config.Rewarded.AdUnitID;
 const requestOptions = {};
 
 const BottomNavigator = (props) => {
-    const [customerInfo, getCustomerInfo]= useCustomerInfo()
     const Auth = useSelector(state => state.AuthReducer)
     const dispatch = useDispatch();
-    const { isLoaded, isClosed, load, show, isEarnedReward, reward } = useRewardedAd(adUnit, requestOptions)
-
-    useEffect(() => {
-        getCustomerInfo();
-    }, []);
-
-    useEffect(() => {
-        if(isEarnedReward) {
-            dispatch(updateCredit(Auth.data.uid, Auth.data.credit + 1))
-        }
-    }, [isEarnedReward])
-
-    useEffect(() => {
-        if(isLoaded) show();
-    }, [isLoaded])
 
     const onOpenChat = () => {
         const state = props.navigation.getState();
         if(state.routes[state.index].name !== 'ChatAI') {
-            props.navigation.replace('ChatAI');
-            // if(customerInfo !== null) {
-            //     if(customerInfo.activeSubscriptions.length > 0) {
-            //         props.navigation.replace('ChatAI');
-            //     } else if(Auth.data.credit > 0) {
-            //         props.navigation.replace('ChatAI');
-            //     } else {
-            //         let value = Math.random()
-            //         if(value > 0.5) {
-            //             props.navigation.replace('License');
-            //         } else {
-            //             load();
-            //         }
-            //     }
-            // } 
+            props.navigation.push('ChatAI');
         }
     }
     const onOpenPrompt = () => {
         const state = props.navigation.getState();
         if(state.routes[state.index].name !== 'PromptAI') {
-            props.navigation.replace('PromptAI');
-            // if(customerInfo !== null) {
-            //     if(customerInfo.activeSubscriptions.length > 0) {
-            //         props.navigation.replace('PromptAI');
-            //     } else if(Auth.data.credit > 0) {
-            //         props.navigation.replace('PromptAI');
-            //     } else {
-            //         let value = Math.random()
-            //         if(value > 0.5) {
-            //             props.navigation.replace('License');
-            //         } else {
-            //             load();
-            //         }
-            //     }
-            // } 
+            props.navigation.push('PromptAI');
         }
     }
     const onOpenWriter = () => {
         const state = props.navigation.getState();
         if(state.routes[state.index].name !== 'WriterAIHome') {
-            props.navigation.replace('WriterAIHome');
-            // if(customerInfo !== null) {
-            //     if(customerInfo.activeSubscriptions.length > 0) {
-            //         props.navigation.replace('WriterAIHome');
-            //     } else if(Auth.data.credit > 0) {
-            //         props.navigation.replace('WriterAIHome');
-            //     } else {
-            //         let value = Math.random()
-            //         if(value > 0.5) {
-            //             props.navigation.replace('License');
-            //         } else {
-            //             load();
-            //         }
-            //     }
-            // } 
+            props.navigation.push('WriterAIHome');
         }
     }
     const onOpenProfile= () => {
         const state = props.navigation.getState();
         if(state.routes[state.index].name !== 'Profile')
-            props.navigation.replace('Profile');
+            props.navigation.push('Profile');
     }
     const onOpenIndex= () => {
         const state = props.navigation.getState();
-        if(state.routes[state.index].name !== 'Home')
+        if(state.routes[state.index].name === 'PromptAI') {
+            props?.onMagicShow();
+        } else if(state.routes[state.index].name === 'PromptAIDetail') {
+            props?.onMagicShow();
+        } else if(state.routes[state.index].name !== 'Home')
             props.navigation.replace('Home');
     }
 
@@ -154,12 +101,18 @@ const BottomNavigator = (props) => {
             <View>
                 <Image style={[styles.homeButton]} source={require('../assets/drawables/btn_home.png')} />
                 <TouchableOpacity style={{position: 'absolute', left: width / 2 - 35, bottom: height / 9 - 35, width: 70, height: 70}} onPress={onOpenIndex}>
-                    <LottieView
-                        style={{ width: 70,  backgroundColor: 'transparent', color: Colors.darkGreen }}
-                        source={require('../assets/ic_home.json')}
-                        loop={true}
-                        autoPlay
-                    />
+                    {
+                        props.navigation?.getState()?.routes[props.navigation.getState().index].name.indexOf('PromptAI') >= 0 ? (
+                            <FontAwesome5 style={{position: 'absolute', left: 20, top: 10}} name="magic" size={30} color="white" />
+                        ) : ( 
+                            <LottieView
+                                style={{ width: 70,  backgroundColor: 'transparent', color: Colors.darkGreen }}
+                                source={require('../assets/ic_home.json')}
+                                loop={true}
+                                autoPlay
+                            />
+                        )
+                    }
                 </TouchableOpacity>
             </View>
         </View>

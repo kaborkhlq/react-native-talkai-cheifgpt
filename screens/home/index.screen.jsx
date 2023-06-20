@@ -1,11 +1,12 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import LottieView from 'lottie-react-native';
 import { View, Text, StyleSheet, Dimensions, BackHandler, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import useCustomerInfo from '../../redux/useCustomerInfo';
 import { useRewardedAd } from 'react-native-google-mobile-ads';
 
+import useTrackEvent from '../../redux/useTrackEvent';
+import useLicensePopup from '../../components/license.modal'
 import { updateCredit } from '../../redux/actions/auth.action';
 import BottomNavigator from '../../components/bottom.navigator';
 import EditText from '../../components/edittext';
@@ -20,9 +21,9 @@ const requestOptions = {};
 
 const HomeScreen = (props) => {
     const [Colors, GetColors] = useColors()
-    const [customerInfo, getCustomerInfo]= useCustomerInfo()
     const AuthReducer = useSelector(state => state.AuthReducer);
     const dispatch = useDispatch();
+    const [response, updateTrack] = useTrackEvent();
     const { isLoaded, isClosed, load, show, isEarnedReward, reward } = useRewardedAd(adUnit, requestOptions)
 
     const styles = new StyleSheet.create({
@@ -44,7 +45,7 @@ const HomeScreen = (props) => {
             borderColor: '#23DB77',
             backgroundColor: Colors.bgDark,
             paddingHorizontal: 20,
-            paddingVertical: 5,
+            paddingVertical: 12,
             height: '80%',
             borderRadius: 50,
         },
@@ -58,7 +59,8 @@ const HomeScreen = (props) => {
 
     useEffect(() => {
         GetColors();
-        getCustomerInfo();
+        console.log(AuthReducer.data);
+        updateTrack()
     }, []);
 
     useEffect(() => {
@@ -72,57 +74,15 @@ const HomeScreen = (props) => {
     }, [isLoaded])
 
     const onOpenChat = () => {
-        props.navigation.replace('ChatAI');
-        // if(customerInfo !== null) {
-        //     if(customerInfo.activeSubscriptions.length > 0) {
-        //         props.navigation.replace('ChatAI');
-        //     } else if(AuthReducer.data.credit > 0) {
-        //         props.navigation.replace('ChatAI');
-        //     } else {
-        //         let value = Math.random()
-        //         if(value > 0.5) {
-        //             props.navigation.replace('License');
-        //         } else {
-        //             load();
-        //         }
-        //     }
-        // } 
+        props.navigation.push('ChatAI');
     }
 
     const onOpenPrompt = () => {
-        props.navigation.replace('PromptAI');
-        // if(customerInfo !== null) {
-        //     if(customerInfo.activeSubscriptions.length > 0) {
-        //         props.navigation.replace('PromptAI');
-        //     } else if(AuthReducer.data.credit > 0) {
-        //         props.navigation.replace('PromptAI');
-        //     } else {
-        //         let value = Math.random()
-        //         if(value > 0.5) {
-        //             props.navigation.replace('License');
-        //         } else {
-        //             load();
-        //         }
-        //     }
-        // } 
+        props.navigation.push('PromptAI');
     }
 
     const onOpenWriter = () => {
-        props.navigation.replace('WriterAIHome');
-        // if(customerInfo !== null) {
-        //     if(customerInfo.activeSubscriptions.length > 0) {
-        //         props.navigation.replace('WriterAIHome');
-        //     } else if(AuthReducer.data.credit > 0) {
-        //         props.navigation.replace('WriterAIHome');
-        //     } else {
-        //         let value = Math.random()
-        //         if(value > 0.5) {
-        //             props.navigation.replace('License');
-        //         } else {
-        //             load();
-        //         }
-        //     }
-        // } 
+        props.navigation.push('WriterAIHome');
     }
 
     const onOpenProfile= () => props.navigation.push('Profile');

@@ -1,6 +1,8 @@
 export default {
     WP_URL: 'https://chiefgpt.cloud',
 
+    OpenAI_NEW_CHAT: 'OpenAI_NEW_CHAT',
+
     OpenAIChat_SUCCESS: 'OpenAIChat_SUCCESS',
     OpenAIChat_REQUEST: 'OpenAIChat_REQUEST',
     OpenAIChat_FAILURE: 'OpenAIChat_FAILURE',

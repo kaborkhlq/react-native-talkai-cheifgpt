@@ -10,7 +10,8 @@ const useColors = () =>{
         darkGreen:  '#254A34',
         background: '#545454',
         input2: '#DBE8E1',
-        input3: '#DBE8E1'
+        input3: '#DBE8E1',
+        toolBackground: '#5A5A5A'
     });
 
     const getColors = () =>{
@@ -24,7 +25,8 @@ const useColors = () =>{
                     darkGreen:  '#254A34',
                     background: '#EEEFEF',
                     input2: '#CFCFCF',
-                    input3: '#254A34'
+                    input3: '#254A34',
+                    toolBackground: '#FFFFFF'
                 })
             }
         });

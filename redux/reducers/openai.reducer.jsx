@@ -20,6 +20,8 @@ export default function reducer (state = initialState, action) {
             return { IS_REQUEST: false, IS_SUCCESS: true, IS_FAILURE: false, openAIChatMsg: action.payload, messages: action.config + '\n' + action.payload }
         case KEYS.OpenAIChat_FAILURE:
             return { ...state, IS_REQUEST: false, IS_SUCCESS: false, IS_FAILURE: true }
+        case KEYS.OpenAI_NEW_CHAT:
+            return { ...state, IS_REQUEST: false, IS_SUCCESS: false, IS_FAILURE: false, messages: "" }
     
         case KEYS.OpenAIWriter_REQUEST:
             return { ...state, IS_REQUEST: true, IS_SUCCESS: false, IS_FAILURE: false }

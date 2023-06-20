@@ -3,6 +3,7 @@ import { View, TextInput, StyleSheet, Image } from 'react-native'
 
 import GlobalStyle from '../assets/values/global.style';
 import useColors from '../assets/values/colors';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const EditText = (props) => {
     const [Colors, GetColors] = useColors();
@@ -42,9 +43,11 @@ const EditText = (props) => {
     const inputMode = (e) => (props.inputMode && props.inputMode !== 'password') ? props.inputMode : 'text'
     
     return (
-        <View style={[props.style, styles.container, GlobalStyle.row, GlobalStyle.column_center]}>
-            { props.icon && (<Image style={[styles.icon]} source={props.icon} />) }
-            <TextInput editable={props.editable} value={value} onChangeText={onChangeText} onSubmitEditing={onSubmitEditing} multiline={props.multiline} placeholder={props.placeholder} placeholderTextColor={Colors.secondaryText} style={[GlobalStyle.Manjari, styles.textinput]} secureTextEntry={props.inputMode === 'password'} inputMode={inputMode} />
+        <View style={[styles.container, GlobalStyle.row, GlobalStyle.column_center, props.style]}>
+            <TouchableOpacity onPress={() => props?.onSearch()}>
+                { props.icon && (<Image style={[styles.icon]} source={props.icon} />) }
+            </TouchableOpacity>
+            <TextInput editable={props.editable} value={props.value} onChangeText={onChangeText} onSubmitEditing={onSubmitEditing} multiline={props.multiline} placeholder={props.placeholder} placeholderTextColor={Colors.secondaryText} style={[GlobalStyle.Manjari, styles.textinput, props.textStyle]} secureTextEntry={props.inputMode === 'password'} inputMode={inputMode} />
         </View>
     )
 }

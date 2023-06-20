@@ -4,6 +4,7 @@ import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import Auth from '@react-native-firebase/auth';
 import FirebaseApp from '@react-native-firebase/app';
 import FireStore from '@react-native-firebase/firestore';
+import analytics from '@react-native-firebase/analytics';
 import * as Facebook from 'expo-facebook';
 
 export const DoFirebaseSignIn = (email, pwd) => dispatch => {
@@ -11,7 +12,7 @@ export const DoFirebaseSignIn = (email, pwd) => dispatch => {
     if(!FirebaseApp.apps.length) FirebaseApp.initializeApp(Config.firebaseConfig);
 
     Auth().signInWithEmailAndPassword(email, pwd).then(result => {
-        
+        analytics().setUserId(result.user.uid)
         FireStore().collection('Users').doc(result.user.uid).get().then(doc => {
             dispatch({
                 type: KEYS.SIGN_IN_SUCCESS,
@@ -106,8 +107,35 @@ export const DoGoogleSignIn = (type) => dispatch => {
             const googleCredential = Auth.GoogleAuthProvider.credential(userInfo.idToken);
             Auth().signInWithCredential(googleCredential).then(userCredential => {
                 const user = userCredential.user;
+                analytics().setUserId(user.uid)
                 FireStore().collection('Users').doc(user.uid).get().then(doc => {
-                    if(type === 'signin') {
+                    if(doc._data === undefined) {
+                        FireStore().collection('Favorites').doc(user.uid).set({})
+                        FireStore().collection('Users').doc(user.uid).set({
+                            phone: user.phoneNumber,
+                            username: user.displayName,
+                            credit: 5,
+                        }).then(() => {
+                            dispatch({
+                                type: KEYS.SIGN_IN_SUCCESS,
+                                payload: {
+                                    uid: user.uid,
+                                    email: user.email,
+                                    emailVerifed: user.emailVerified,
+                                    username: user.displayName,
+                                    phone: user.phoneNumber,
+                                    photo: user.photoURL,
+                                    credit: 5
+                                },
+                                service: 'google'
+                            })
+                        }).catch(error => {
+                            dispatch({
+                                type: KEYS.SIGN_IN_FAILURE,
+                                payload: error
+                            })
+                        });
+                    } else {
                         dispatch({
                             type: KEYS.SIGN_IN_SUCCESS,
                             payload: {
@@ -121,37 +149,7 @@ export const DoGoogleSignIn = (type) => dispatch => {
                             },
                             service: 'google'
                         })
-                    } else {
-                        if(doc._data === undefined) {
-                            FireStore().collection('Users').doc(user.uid).set({
-                                phone: user.phoneNumber,
-                                username: user.displayName,
-                                credit: 5,
-                            }).then(() => {
-                                dispatch({
-                                    type: KEYS.SIGN_IN_SUCCESS,
-                                    payload: {
-                                        uid: user.uid,
-                                        email: user.email,
-                                        emailVerifed: user.emailVerified,
-                                        username: user.displayName,
-                                        phone: user.phoneNumber,
-                                        photo: user.photoURL,
-                                        credit: 5
-                                    },
-                                    service: 'google'
-                                })
-                            }).catch(error => {
-                                dispatch({
-                                    type: KEYS.SIGN_IN_FAILURE,
-                                    payload: error
-                                })
-                            });
-                        } else {
-                            resolve('is-exist');
-                        }
                     }
-                    
                 });
             });
         } catch (error) {
@@ -183,7 +181,33 @@ export const DoFaceBookSignIn = (type) => dispatch => {
                         const user = userCredential.user;
                         
                         FireStore().collection('Users').doc(user.uid).get().then(doc => {
-                            if(type === 'signin') {
+                            if(doc._data === undefined) {
+                                FireStore().collection('Favorites').doc(user.uid).set({})
+                                FireStore().collection('Users').doc(user.uid).set({
+                                    phone: user.phoneNumber,
+                                    username: user.displayName,
+                                    credit: 5,
+                                }).then(() => {
+                                    dispatch({
+                                        type: KEYS.SIGN_IN_SUCCESS,
+                                        payload: {
+                                            uid: user.uid,
+                                            email: user.email,
+                                            emailVerifed: user.emailVerified,
+                                            username: user.displayName,
+                                            phone: user.phoneNumber,
+                                            photo: user.photoURL,
+                                            credit: 5
+                                        },
+                                        service: 'google'
+                                    })
+                                }).catch(error => {
+                                    dispatch({
+                                        type: KEYS.SIGN_IN_FAILURE,
+                                        payload: error
+                                    })
+                                });
+                            } else {
                                 dispatch({
                                     type: KEYS.SIGN_IN_SUCCESS,
                                     payload: {
@@ -195,39 +219,9 @@ export const DoFaceBookSignIn = (type) => dispatch => {
                                         photo: user.photoURL,
                                         credit: doc._data.credit
                                     },
-                                    service: 'facebook'
+                                    service: 'google'
                                 })
-                            } else {
-                                if(doc._data === undefined) {
-                                    FireStore().collection('Users').doc(user.uid).set({
-                                        phone: user.phoneNumber,
-                                        username: user.displayName,
-                                        credit: 5,
-                                    }).then(() => {
-                                        dispatch({
-                                            type: KEYS.SIGN_IN_SUCCESS,
-                                            payload: {
-                                                uid: user.uid,
-                                                email: user.email,
-                                                emailVerifed: user.emailVerified,
-                                                username: user.displayName,
-                                                phone: user.phoneNumber,
-                                                photo: user.photoURL,
-                                                credit: 5
-                                            },
-                                            service: 'facebook'
-                                        })
-                                    }).catch(error => {
-                                        dispatch({
-                                            type: KEYS.SIGN_IN_FAILURE,
-                                            payload: error
-                                        })
-                                    });
-                                } else {
-                                    resolve('is-exist');
-                                }
                             }
-                            
                         });
                     });
                 }

@@ -10,6 +10,10 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+export const NewChat = () => dispatch => {
+    dispatch({type: KEYS.OpenAI_NEW_CHAT})
+}
+
 export const OpenAIChat = (message) => dispatch => {
     dispatch({ type: KEYS.OpenAIChat_REQUEST, paylaod: message })
     openai.createCompletion({
@@ -56,35 +60,34 @@ export const OpenAIWriter = (category, message) => dispatch => {
     })
 }
 
-export const OpenAIPrompt = (prompt, n, size, index) => {
+export const OpenAIPrompt = (settings) => {
     return new Promise(async (resolve, reject) => {
-        const header = { 'Content-Type': 'application/json' };
-        axios.post('https://stablediffusionapi.com/api/v3/text2img', {
+        let body = {
             "key": Config.STABLE_API_KEY,
-            "prompt": prompt,
-            "negative_prompt": null,
-            "width": size,
-            "height": size,
-            "samples": "1",
-            "num_inference_steps": "20",
+            "prompt": settings.prompt,
+            "negative_prompt": settings.negative_prompt,
+            "width": settings.image_width,
+            "height": settings.image_height,
+            "samples":settings.number_of_images,
+            "num_inference_steps": settings.num_inference_steps,
             "seed": null,
-            "guidance_scale": 7.5,
-            "safety_checker": "yes",
-            "multi_lingual": "no",
-            "panorama": "no",
-            "self_attention": "no",
-            "upscale": "no",
+            "guidance_scale": settings.guidance_scale,
+            "safety_checker": settings.safety_checker,
+            "multi_lingual": settings.multi_lingual,
+            "panorama": settings.panorama,
+            "self_attention": settings.self_attention,
+            "upscale": settings.upscale,
             "embeddings_model": "embeddings_model_id",
             "webhook": null,
             "track_id": null
-        }, header).then(result => {
+        };
+        const header = { 'Content-Type': 'application/json' };
+        axios.post('https://stablediffusionapi.com/api/v3/text2img', body, header).then(result => {
             resolve({
-                prompt: prompt,
-                index: index,
+                prompt: settings.prompt,
                 images: result.data
             });
         }).catch(error =>{
-            console.log(error);
             reject(error);
         })
     });
@@ -123,7 +126,6 @@ export const GetWriterPrompt = () => {
         if(!FirebaseApp.apps.length) FirebaseApp.initializeApp(Config.firebaseConfig);
         
         FireStore().collection('Prompts').doc('Image').get().then(result => {
-            console.log(result);
             resolve(result);
         }).catch(error => {
             reject(error);

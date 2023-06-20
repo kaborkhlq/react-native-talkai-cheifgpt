@@ -2,8 +2,10 @@ import React, {useEffect, useState, useRef} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
-import { useRewardedAd } from 'react-native-google-mobile-ads';
+import { FontAwesome5, FontAwesome, Entypo } from '@expo/vector-icons';
+import * as SecureStore from 'expo-secure-store';
 
+import useLicenseModal from '../../../components/license.modal.jsx';
 import { updateCredit } from '../../../redux/actions/auth.action.jsx';
 import MessageContent from '../../../components/message.content.jsx';
 import EditText from '../../../components/edittext';
@@ -11,26 +13,23 @@ import useColors from '../../../assets/values/colors';
 import GlobalStyle from '../../../assets/values/global.style';
 import Loading from '../../../components/loading.jsx';
 
-import Config from '../../../redux/config';
 import useCustomerInfo from '../../../redux/useCustomerInfo';
-import { OpenAIChat } from '../../../redux/actions/openai.action';
-const {width, height} = Dimensions.get('window');
+import { NewChat, OpenAIChat } from '../../../redux/actions/openai.action';
 
-const adUnit = Config.Rewarded.AdUnitID;
-const requestOptions = {};
 
 const ChatAI = (props) => {
+    const [setPopup, LicenseModal] = useLicenseModal(props.navigation);
     const [Colors, GetColors] = useColors()
     const [limit, setLimit] = useState(0);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [savedMessages, setSavedMessages] = useState([]);
     const msgContent = useRef();
     const dispatch = useDispatch();
     const OpenAIReducer = useSelector(state => state.OpenAIReducer);
     const AuthReducer = useSelector(state => state.AuthReducer)
     const [customerInfo, getCustomerInfo] = useCustomerInfo();
-    const { isLoaded, isClosed, load, show, isEarnedReward, reward } = useRewardedAd(adUnit, requestOptions)
     const styles = new StyleSheet.create({
         container: {
             padding: 20,
@@ -38,7 +37,8 @@ const ChatAI = (props) => {
         icon: {
             width: 20,
             height: 20,
-            resizeMode: 'contain'
+            resizeMode: 'contain',
+            backgroundColor: Colors.background
         },
         title: {
             color: Colors.bgLight,
@@ -51,8 +51,22 @@ const ChatAI = (props) => {
         },
     });
 
+    const onNewChat = () => {
+        dispatch(NewChat)
+        setSavedMessages([])
+        setMessages([])
+        SecureStore.setItemAsync('saved_chats', JSON.stringify([]))
+        setLoading(true);
+        dispatch(OpenAIChat(`\nYou: Act as my friend called Dave. My name is ${AuthReducer.data.username}.`));
+    }
+
     useEffect(() =>{
         GetColors()
+        SecureStore.getItemAsync('saved_chats').then(result => {
+            if(result !== null && result !== undefined)
+                setSavedMessages(JSON.parse(result))
+        })
+
         return () => {
             setMessage([])
         }
@@ -78,6 +92,18 @@ const ChatAI = (props) => {
     const onChange = (e) => {
         setMessage(e);
     }
+
+    useEffect(() => {
+        let array = savedMessages.concat(messages)
+        let length = array.length;
+        let temp = [];
+        if(length > 0) {
+            for(let i = length - 1 ; i >= (length >= 10 ? length - 10 : 0 ) ; i--) {
+                temp.push(array[i]);
+            }
+        }
+        SecureStore.setItemAsync('saved_chats', JSON.stringify(temp));
+    }, [messages])
 
     useEffect(() => {
         setLoading(true);
@@ -112,26 +138,10 @@ const ChatAI = (props) => {
     }, [limit])
 
     useEffect(() => {
-        if(isEarnedReward) {
-            dispatch(updateCredit(Auth.data.uid, Auth.data.credit + 1))
-        }
-    }, [isEarnedReward])
-
-    useEffect(() => {
-        if(isLoaded) show();
-    }, [isLoaded])
-
-    useEffect(() => {
         if(customerInfo !== null) {
             if(customerInfo.activeSubscriptions.length === 0) {
                 if(AuthReducer.data.credit === 0) {
-                    let value = Math.random()
-                    if(value > 0.5) {
-                        props.navigation.replace('License');
-                    } else {
-                        setLoading(true);
-                        load();
-                    }
+                    setPopup(true);
                 } else {
                     dispatch(updateCredit(AuthReducer.data.uid, AuthReducer.data.credit - 1))
                     setLimit(0)
@@ -140,6 +150,10 @@ const ChatAI = (props) => {
         }
     }, [customerInfo])
 
+    const onEditMessage = (e) => {
+        setMessage(e);
+    }
+
     return (
         <View style={[{backgroundColor: Colors.background}, GlobalStyle.container, styles.container, GlobalStyle.column_center]}>
             <View style={[GlobalStyle.row, { justifyContent: 'space-between', alignItems: 'center', width: '90%' }]}>
@@ -147,17 +161,29 @@ const ChatAI = (props) => {
                     <Image tintColor={Colors.bgLight} source={require('../../../assets/drawables/ic_back.png')} style={[styles.icon]} />
                 </TouchableOpacity>
                 <Text style={[GlobalStyle.ManjariBold, styles.title]}>Talk AI Chat</Text>
-                <View></View>
-                {/* <TouchableOpacity onPress={() => setMessages([])}>
-                    <Image source={require('../../../assets/drawables/ic_add.png')} style={[styles.icon]} />
-                </TouchableOpacity> */}
+                <View style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center]}>
+                    <FontAwesome5 style={{marginRight: 10}} name="coins" size={24} color={Colors.bgLight} />
+                    <Text style={[GlobalStyle.ManjariBold, styles.title]}>{AuthReducer.data.credit}</Text>
+                </View>
             </View>
             <ScrollView style={styles.msgContent} ref={msgContent}>
+                { savedMessages.map((item, index, array) => (
+                    item.type !== 'order' && <MessageContent editMessage={onEditMessage} key={index} content={item.content.replace(/Dave: /g, '')} type={item.type} time={item.time} />
+                )) }
                 { messages.map((item, index, array) => (
-                    item.type !== 'order' && <MessageContent key={index} content={item.content.replace(/Dave: /g, '')} type={item.type} time={item.time} />
+                    item.type !== 'order' && <MessageContent editMessage={onEditMessage} key={index} content={item.content.replace(/Dave: /g, '')} type={item.type} time={item.time} />
                 )) }
             </ScrollView>
-            <EditText onChange={(e) => onChange(e)} searchSubmit={(e) => searchSubmit(e)} placeholder="Write a message..." style={{width: '100%', position: 'absolute', bottom: 30}} />
+            <View style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_space_around, {width: '100%', position: 'absolute', bottom: 30}]}>
+                <TouchableOpacity onPress={() => onNewChat()} style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center, {backgroundColor: Colors.bgDark, padding: 10, borderRadius: 50, width: 40, height: 40}]}>
+                    <Entypo name="new-message" size={20} color={Colors.bgLight} />
+                </TouchableOpacity>
+                <EditText value={message} onChange={(e) => onChange(e)} searchSubmit={(e) => searchSubmit(e)} placeholder="Write a message..." style={{width: '70%'}} />
+                <TouchableOpacity onPress={(e) => searchSubmit(e)} style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center, {backgroundColor: Colors.bgDark, padding: 10, borderRadius: 50, width: 40, height: 40}]}>
+                    <FontAwesome name="send" size={20} color={Colors.bgLight} />
+                </TouchableOpacity>
+            </View>
+            {LicenseModal}
             <Loading loading={loading} />
         </View>
     )

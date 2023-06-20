@@ -27,6 +27,7 @@ import PromptScreen from './screens/home/openai/prompt.screen';
 import PromptDetailScreen from './screens/home/openai/prompt.detail.screen';
 
 import ProfileScreen from './screens/home/profile.screen';
+import ImageView from './screens/home/image.view';
 
 const Stack = createStackNavigator();
 import useColors from './assets/values/colors';
@@ -40,7 +41,7 @@ const App = () =>  {
     <Provider store={Store}>
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Splash">
+          <Stack.Navigator initialRouteName="Home">
             <Stack.Screen name="Splash" options={{ headerShown: false }} component={SplashScreen} />
             <Stack.Screen name="Introduction" options={{ headerShown: false }} component={IntroScreen} />
 
@@ -56,6 +57,7 @@ const App = () =>  {
             <Stack.Screen name="PromptAI" options={{ headerShown: false }} component={PromptScreen} />
             <Stack.Screen name="PromptAIDetail" options={{ headerShown: false }} component={PromptDetailScreen} />
 
+            <Stack.Screen name="ImageView" options={{ headerShown: false }} component={ImageView} />
             <Stack.Screen name="Profile" options={{ headerShown: false }} component={ProfileScreen} />
           </Stack.Navigator>
         </NavigationContainer>

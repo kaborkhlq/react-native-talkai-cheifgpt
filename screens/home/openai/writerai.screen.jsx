@@ -1,10 +1,11 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {View, Text, TouchableOpacity, Image, StyleSheet, TextInput, Dimensions} from 'react-native';
+import {View, Text, TouchableOpacity, Image, StyleSheet, TextInput, Dimensions, ToastAndroid} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import LottieView from 'lottie-react-native';
 import SelectDropdown from 'react-native-select-dropdown'
-import { useRewardedAd } from 'react-native-google-mobile-ads';
+import * as Clipboard from 'expo-clipboard';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 
+import useLicenseModal from '../../../components/license.modal';
 import Button from '../../../components/button';
 import useColors from '../../../assets/values/colors';
 import GlobalStyle from '../../../assets/values/global.style'
@@ -17,10 +18,8 @@ import { OpenAIWriter } from '../../../redux/actions/openai.action';
 import { ScrollView } from 'react-native-gesture-handler';
 const {width, height} = Dimensions.get('window');
 
-const adUnit = Config.Rewarded.AdUnitID;
-const requestOptions = {};
-
 const WriterAI = (props) => {
+    const [setPopup, LicenseModal] = useLicenseModal(props.navigation);
     const [Colors, GetColors] = useColors();
     const [customerInfo, getCustomerInfo]= useCustomerInfo()
     const [loading, setLoading] = useState(true);
@@ -33,7 +32,6 @@ const WriterAI = (props) => {
     const dispatch = useDispatch();
     const OpenAIReducer = useSelector(state => state.OpenAIReducer);
     const AuthReducer = useSelector(state => state.AuthReducer)
-    const { isLoaded, isClosed, load, show, isEarnedReward, reward } = useRewardedAd(adUnit, requestOptions)
 
     const styles = new StyleSheet.create({
         container: {
@@ -86,16 +84,6 @@ const WriterAI = (props) => {
     });
 
     useEffect(() => {
-        if(isEarnedReward) {
-            dispatch(updateCredit(AuthReducer.data.uid, AuthReducer.data.credit + 1))
-        }
-    }, [isEarnedReward])
-
-    useEffect(() => {
-        if(isLoaded) show();
-    }, [isLoaded])
-
-    useEffect(() => {
         GetColors()
         getCustomerInfo();
         setLoading(true);
@@ -114,7 +102,6 @@ const WriterAI = (props) => {
             if(OpenAIReducer.IS_REQUEST) {
                 setLoading(true);
             } else if(OpenAIReducer.IS_SUCCESS) {
-                console.log(OpenAIReducer.openAIWriterMsg);
                 setMessage(OpenAIReducer.openAIWriterMsg);
                 setLoading(false);
             } else if(OpenAIReducer.IS_FAILURE) {
@@ -133,25 +120,27 @@ const WriterAI = (props) => {
                 setLoading(true);
                 dispatch(OpenAIWriter(`${category}, ${query}`, reqmsg));
             } else {
-                let value = Math.random()
-                if(value > 0.5) {
-                    props.navigation.replace('License');
-                } else {
-                    setLoading(true);
-                    load();
-                }
+                setPopup(true);
             }
         } 
     }
 
+    const copyMessage = async () => {
+        await Clipboard.setStringAsync(message);
+        ToastAndroid.show('Content successfully copied.', ToastAndroid.LONG);
+    }
+
     return (
         <View style={[{backgroundColor: Colors.background}, GlobalStyle.container, styles.container]}>
-            <View style={[GlobalStyle.row, { justifyContent: 'space-between', alignItems: 'center', width: '90%' }]}>
-            <TouchableOpacity onPress={() => props.navigation.replace('Home')}>
+            <View style={[GlobalStyle.row, { justifyContent: 'space-between', alignItems: 'center', width: '100%' }]}>
+                <TouchableOpacity onPress={() => props.navigation.replace('Home')}>
                     <Image tintColor={Colors.bgLight} source={require('../../../assets/drawables/ic_back.png')} style={[styles.icon]} />
                 </TouchableOpacity>
                 <Text style={[GlobalStyle.ManjariBold, styles.title]}>Talk AI Writer</Text>
-                <View></View>
+                <TouchableOpacity style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center]}>
+                    <FontAwesome5 style={{marginRight: 10}} name="coins" size={24} color={Colors.bgLight} />
+                    <Text style={[GlobalStyle.ManjariBold, styles.title]}>{AuthReducer.data.credit}</Text>
+                </TouchableOpacity>
             </View>
             <Text style={[GlobalStyle.ManjariBold, styles.textStyle, styles.mt15, styles.mb10]}>Case</Text>
             <SelectDropdown
@@ -171,17 +160,13 @@ const WriterAI = (props) => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <Text style={[GlobalStyle.Manjari, styles.textAreaStyle]}>{message}</Text>
                 </ScrollView>
-                <TouchableOpacity style={{position: 'absolute', top: -50, right: -50}}>
-                    <LottieView
-                        style={{ width: 130, height: 110, borderRadius: 100, backgroundColor: 'transparent' }}
-                        source={require('../../../assets/ic_copy.json')}
-                        loop={true}
-                        autoPlay
-                    />
+                <TouchableOpacity onPress={copyMessage} style={{position: 'absolute', top: -15, right: -15, backgroundColor:Colors.bgDark, padding: 10, borderRadius: 30, borderStyle:'solid', borderWidth: 1, borderColor: '#23DB77'}}>
+                    <Feather name="copy" size={20} color={Colors.bgLight} />
                 </TouchableOpacity>
             </View>
             <Button title="GENERATE TEXT" width='100%' marginTop={10} bgColor={Colors.mainGreen} titleColor={Colors.darkGreen} onPress={() => generateAdvise()} />
             <Loading loading={loading} />
+            {LicenseModal}
         </View>
     )
 }

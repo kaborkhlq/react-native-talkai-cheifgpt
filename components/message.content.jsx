@@ -1,10 +1,13 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
+import {View, Text, StyleSheet, Pressable, TouchableOpacity, ToastAndroid} from 'react-native';
 import useColors from '../assets/values/colors';
 import GlobalStyle from '../assets/values/global.style';
+import { Feather } from '@expo/vector-icons'; 
+import * as Clipboard from 'expo-clipboard';
 
 const MessageContent = (props) => {
     const [Colors, GetColors] = useColors()
+    const [flag, setFlag] = React.useState(false);
     const styles = new StyleSheet.create({
         container: {
             width: '100%',
@@ -48,13 +51,37 @@ const MessageContent = (props) => {
         GetColors()
     }, [])
 
+    const showTooltip = () => setFlag(e => !e)
+
+    const copyMessage = async () => {
+        setFlag(false)
+        await Clipboard.setStringAsync(props.content);
+        ToastAndroid.show('Content successfully copied.', ToastAndroid.LONG);
+    }
+    const editMessage = () => {
+        setFlag(false)
+        props?.editMessage(props.content)
+    }
+
     return (
-        <View style={[styles.container, { alignItems: props.type === 'income' ? 'flex-start' : 'flex-end' }]}>
+        <Pressable onPress={showTooltip} style={[styles.container, { position: 'relative', alignItems: props.type === 'income' ? 'flex-start' : 'flex-end' }]}>
             <View style={[styles.content, props.type === 'income' ? styles.income : styles.outcome]}>
                 <Text style={[GlobalStyle.Manjari, styles.message, props.type === 'income' ? styles.msgIncome : styles.msgOutcome]}>{props.content}</Text>   
             </View>
             <Text style={[GlobalStyle.Manjari, styles.time]}>{props.time}</Text>
-        </View>
+            {
+                flag && (
+                    <View style={[props.type === 'income' ? {left: 24} : {right: 24}, GlobalStyle.row, GlobalStyle.column_center, {position: 'absolute', top: -18, backgroundColor:Colors.bgDark, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 30, borderStyle:'solid', borderWidth: 1, borderColor: '#23DB77' }]}>
+                        <TouchableOpacity onPress={copyMessage} style={{marginRight: 10}}>
+                            <Feather name="copy" size={18} color={Colors.bgLight} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={editMessage}>
+                            <Feather name="edit" size={18} color={Colors.bgLight} />
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
+        </Pressable>
     );
 }
 

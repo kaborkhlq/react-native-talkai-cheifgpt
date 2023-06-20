@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {View, Text, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions, RefreshControl, _ScrollView} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { Feather, FontAwesome5 } from '@expo/vector-icons';
 
 import Navbar from '../../../components/navbar';
 import useColors from '../../../assets/values/colors';
@@ -18,6 +19,7 @@ const WriterAIHome = (props) => {
     const [category, setCategory] = useState('');
     const [prompt, setPrompt] = useState(null);
     const [categoryData, setCategoryData] = useState([]);
+    const AuthReducer = useSelector(state => state.AuthReducer)
 
     const styles = new StyleSheet.create({
         container: {
@@ -102,7 +104,10 @@ const WriterAIHome = (props) => {
                     <Image tintColor={Colors.bgLight} source={require('../../../assets/drawables/ic_back.png')} style={[styles.icon]} />
                 </TouchableOpacity>
                 <Text style={[GlobalStyle.ManjariBold, styles.title]}>Talk AI Prompts</Text>
-                <View></View>
+                <TouchableOpacity style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center]}>
+                    <FontAwesome5 style={{marginRight: 10}} name="coins" size={24} color={Colors.bgLight} />
+                    <Text style={[GlobalStyle.ManjariBold, styles.title]}>{AuthReducer.data.credit}</Text>
+                </TouchableOpacity>
             </View>
             <View style={{width: width}}>
                 <View style={{width: width, flexDirection: 'row', justifyContent:'center'}}>

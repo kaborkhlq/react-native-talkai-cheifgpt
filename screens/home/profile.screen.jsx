@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import LottieView from 'lottie-react-native';
 import moment from 'moment/moment';
 import { DoFirebaseSignOut, GoogleSignOut, FaceBookSignOut } from '../../redux/actions/auth.action';
-import { MaterialIcons, Feather, Entypo, Octicons } from '@expo/vector-icons'; 
+import { FontAwesome5, Feather, Entypo, Octicons } from '@expo/vector-icons'; 
 
 import useColors from '../../assets/values/colors';
 import GlobalStyle from '../../assets/values/global.style';
@@ -111,7 +111,7 @@ const ProfileScreen = (props) => {
             </TouchableOpacity>
 
             <TouchableOpacity style={[GlobalStyle.row, GlobalStyle.column_center, {width: '100%', marginTop: 20,}]}>
-                <Entypo style={{marginRight: 20}} name="credit" size={24} color={Colors.bgLight} />
+                <FontAwesome5 style={{marginRight: 20}} name="coins" size={24} color={Colors.bgLight} />
                 <Text style={[GlobalStyle.ManjariBold, styles.label]}>{AuthReducer.data.credit} Credit Available</Text>
             </TouchableOpacity>
 
