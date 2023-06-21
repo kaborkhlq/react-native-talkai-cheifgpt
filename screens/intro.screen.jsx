@@ -1,19 +1,22 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Image } from 'react-native';
+import {  useFonts, Manjari_400Regular as Manjari, Manjari_700Bold as ManjariBold } from '@expo-google-fonts/manjari';
 import Carousel from 'react-native-snap-carousel';
-import { useInterstitialAd } from 'react-native-google-mobile-ads';
+import { useAppOpenAd } from 'react-native-google-mobile-ads';
 
+import useCustomerInfo from '../redux/useCustomerInfo';
 import Config from '../redux/config';
 import Button from '../components/button';
 import GlobalStyle from '../assets/values/global.style';
 import useColors from '../assets/values/colors';
 const { width , height } = Dimensions.get('window');
 
-const adUnit = Config.Interstitial.AdUnitID;
+const adUnit = Config.AppOpen.AdUnitID;
 const requestOptions = {};
 
 const IntroScreen = (props) => {
     const [Colors, GetColors] = useColors();
+    const [fontsLoaded] = useFonts({Manjari, ManjariBold});
     const titles = [
         'Help with travel planning',
         'Help in choosing gifts',
@@ -31,8 +34,9 @@ const IntroScreen = (props) => {
     ];
     const _carousel = useRef(null);
 
-    const { isLoaded, isClosed, load, show } = useInterstitialAd(adUnit, requestOptions)
+    const { isLoaded, isClosed, load, show } = useAppOpenAd(adUnit, requestOptions)
     const [gone, setGone] = useState(false);
+    const [customerInfo, getCustomerInfo] = useCustomerInfo()
 
     const styles = new StyleSheet.create({
         skipButtonStyle: {
@@ -84,23 +88,24 @@ const IntroScreen = (props) => {
     });
     useEffect(() => { GetColors() }, [])
     useEffect(() => {
-        // load();
+        load();
+        getCustomerInfo();
     }, [load]);
     
     useEffect(() => {
         if (isClosed) {
             setGone(true);
-            // props.navigation.replace('Introduction')
         }
     }, [isClosed]);
 
     useEffect(() => {
-        if(isLoaded) {
-            setTimeout(() => {
+        console.log(isLoaded);
+        if(customerInfo !== null && customerInfo.activeSubscriptions.length === 0) {
+            if(isLoaded) {
                 if(!gone) show();
-            }, 3000)
+            }
         }
-    }, [isLoaded]);
+    }, [isLoaded, customerInfo]);
 
     goNextStep = (index) => {
         if(index === 3) {

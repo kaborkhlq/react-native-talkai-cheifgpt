@@ -23,6 +23,7 @@ import SelectDropdown from 'react-native-select-dropdown'
 import Slider from '@react-native-community/slider';
 import RNFetchBlob from 'rn-fetch-blob';
 import MyImage from '../../../components/my.image.jsx'
+import useTrackEvent from '../../../redux/useTrackEvent.jsx';
 
 let settings = {
     prompt: "",
@@ -43,6 +44,7 @@ const slideUp = {0: { bottom: -1 * height }, 1: {bottom: 0}};
 const slideDown = {0: { bottom: 0 }, 1: {bottom: -1 * height}};
 
 const PromptDetailScreen = (props) => {
+    const [response, setTrack] = useTrackEvent();
     const [setPopup, LicenseModal] = useLicenseModal(props.navigation);
     const [customerInfo, getCustomerInfo] = useCustomerInfo();
     const [Colors, GetColors] = useColors()
@@ -202,6 +204,7 @@ const PromptDetailScreen = (props) => {
     }, [previewImage])
 
     const generate = async (settings) => {
+        setTrack('image_generation_started', AuthReducer.data)
         setRefreshing(true);
         let result = await OpenAIPrompt(settings);
         if(result.images.status === 'success') {

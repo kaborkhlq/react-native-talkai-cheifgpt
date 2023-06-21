@@ -9,6 +9,7 @@ import Button from '../../components/button';
 import GlobalStyle from '../../assets/values/global.style';
 import useColors from '../../assets/values/colors';
 import Loading from '../../components/loading';
+import useTrackEvent from '../../redux/useTrackEvent';
 
 const APIKeys = {
     apple: Config.RevenueCat_API_KEY.apple,
@@ -17,6 +18,7 @@ const APIKeys = {
 
 const LicenseScreen = ({navigation}) => {
     const [Colors, GetColors] = useColors()
+    const [response, setTrack] = useTrackEvent();
     const [currentOffering, setCurrentOffering] = useState(null);
     const [annualPackage, setAnnualPackage] = useState(null);
     const [monthlyPackage, setMonthlyPackage] = useState(null);
@@ -107,6 +109,19 @@ const LicenseScreen = ({navigation}) => {
         if(activePackage === 'WEEKLY') purchasePackage = weeklyPackage
 
         Purchases.purchasePackage(purchasePackage).then(purchaserInfo => {
+            if(activePackage === 'ANNUAL') setTrack('annual_subscription_purchased', {
+                currencyCode : annualPackage.product.currencyCode,
+                price: annualPackage.product.price
+            })
+            if(activePackage === 'MONTHLY') setTrack('month_subcription_purchased', {
+                currencyCode : monthlyPackage.product.currencyCode,
+                price: monthlyPackage.product.price
+            })
+            if(activePackage === 'WEEKLY') setTrack('weekly_subscription_purchased', {
+                currencyCode : weeklyPackage.product.currencyCode,
+                price: weeklyPackage.product.price
+            })
+
             navigation.replace('Home')
         })
     };

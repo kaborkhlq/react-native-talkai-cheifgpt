@@ -41,7 +41,7 @@ const App = () =>  {
     <Provider store={Store}>
       <PaperProvider>
         <NavigationContainer>
-          <Stack.Navigator initialRouteName="Home">
+          <Stack.Navigator initialRouteName="Introduction">
             <Stack.Screen name="Splash" options={{ headerShown: false }} component={SplashScreen} />
             <Stack.Screen name="Introduction" options={{ headerShown: false }} component={IntroScreen} />
 

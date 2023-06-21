@@ -12,12 +12,14 @@ import EditText from '../../../components/edittext';
 import useColors from '../../../assets/values/colors';
 import GlobalStyle from '../../../assets/values/global.style';
 import Loading from '../../../components/loading.jsx';
+import useTrackEvent from '../../../redux/useTrackEvent.jsx';
 
 import useCustomerInfo from '../../../redux/useCustomerInfo';
 import { NewChat, OpenAIChat } from '../../../redux/actions/openai.action';
 
 
 const ChatAI = (props) => {
+    const [response, setTract] = useTrackEvent();
     const [setPopup, LicenseModal] = useLicenseModal(props.navigation);
     const [Colors, GetColors] = useColors()
     const [limit, setLimit] = useState(0);
@@ -115,6 +117,7 @@ const ChatAI = (props) => {
             if(OpenAIReducer.IS_REQUEST) {
                 setLoading(true);
             } else if(OpenAIReducer.IS_SUCCESS) {
+                setTrack('chat_started', AuthReducer.data)
                 setMessages([
                     ...messages,
                     { 

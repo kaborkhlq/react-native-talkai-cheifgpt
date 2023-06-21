@@ -60,7 +60,6 @@ const HomeScreen = (props) => {
     useEffect(() => {
         GetColors();
         console.log(AuthReducer.data);
-        updateTrack()
     }, []);
 
     useEffect(() => {
