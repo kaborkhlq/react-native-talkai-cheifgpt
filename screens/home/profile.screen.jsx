@@ -49,7 +49,7 @@ const ProfileScreen = (props) => {
     useEffect(() => {
         GetColors()
         getCustomerInfo();
-        console.log(AuthReducer.data)
+        
     }, []);
 
     const changeTheme = () => {
@@ -81,7 +81,7 @@ const ProfileScreen = (props) => {
         if(AuthReducer.service === 'google') dispatch(GoogleSignOut());
         else if(AuthReducer.service === 'firebase') dispatch(DoFirebaseSignOut());
         else dispatch(FaceBookSignOut());
-
+        
         props.navigation.replace('SignIn')
     }
 

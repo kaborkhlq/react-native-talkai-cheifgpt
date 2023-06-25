@@ -17,9 +17,8 @@ import useTrackEvent from '../../../redux/useTrackEvent.jsx';
 import useCustomerInfo from '../../../redux/useCustomerInfo';
 import { NewChat, OpenAIChat } from '../../../redux/actions/openai.action';
 
-
 const ChatAI = (props) => {
-    const [response, setTract] = useTrackEvent();
+    const [response, setTrack] = useTrackEvent();
     const [setPopup, LicenseModal] = useLicenseModal(props.navigation);
     const [Colors, GetColors] = useColors()
     const [limit, setLimit] = useState(0);
@@ -96,7 +95,8 @@ const ChatAI = (props) => {
     }
 
     useEffect(() => {
-        let array = savedMessages.concat(messages)
+        let t = savedMessages.filter((item, index, array) => item !== '')
+        let array = t.concat(messages)
         let length = array.length;
         let temp = [];
         if(length > 0) {
@@ -104,7 +104,8 @@ const ChatAI = (props) => {
                 temp.push(array[i]);
             }
         }
-        SecureStore.setItemAsync('saved_chats', JSON.stringify(temp));
+        let temp1 = temp.reverse()
+        SecureStore.setItemAsync('saved_chats', JSON.stringify(temp1));
     }, [messages])
 
     useEffect(() => {
@@ -118,14 +119,25 @@ const ChatAI = (props) => {
                 setLoading(true);
             } else if(OpenAIReducer.IS_SUCCESS) {
                 setTrack('chat_started', AuthReducer.data)
-                setMessages([
-                    ...messages,
-                    { 
-                        content: OpenAIReducer.openAIChatMsg,
-                        type: 'income',
-                        time: moment().format('hh:mm')
-                    }
-                ]);
+                if(!(messages.length === 0 && savedMessages.length !== 0)) {
+                    setMessages([
+                        ...messages,
+                        { 
+                            content: OpenAIReducer.openAIChatMsg,
+                            type: 'income',
+                            time: moment().format('hh:mm')
+                        }
+                    ]);
+                } else {
+                    setMessages([
+                        ...messages,
+                        { 
+                            content: '',
+                            type: 'income',
+                            time: moment().format('hh:mm')
+                        }
+                    ]);
+                }
                 msgContent.current.scrollToEnd({animated: true});
                 setLoading(false);
             } else if(OpenAIReducer.IS_FAILURE) {
@@ -170,11 +182,13 @@ const ChatAI = (props) => {
                 </View>
             </View>
             <ScrollView style={styles.msgContent} ref={msgContent}>
-                { savedMessages.map((item, index, array) => (
-                    item.type !== 'order' && <MessageContent editMessage={onEditMessage} key={index} content={item.content.replace(/Dave: /g, '')} type={item.type} time={item.time} />
-                )) }
+                { savedMessages.map((item, index, array) => { 
+                    let _item = item
+                    return (
+                      _item.type !== 'order' && _item.content !== '' && <MessageContent editMessage={onEditMessage} key={index} content={_item.content.replace(/Dave: /g, '')} type={_item.type} time={_item.time} />
+                )}) }
                 { messages.map((item, index, array) => (
-                    item.type !== 'order' && <MessageContent editMessage={onEditMessage} key={index} content={item.content.replace(/Dave: /g, '')} type={item.type} time={item.time} />
+                    item.type !== 'order' && item.content !== '' && <MessageContent editMessage={onEditMessage} key={index} content={item.content.replace(/Dave: /g, '')} type={item.type} time={item.time} />
                 )) }
             </ScrollView>
             <View style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_space_around, {width: '100%', position: 'absolute', bottom: 30}]}>

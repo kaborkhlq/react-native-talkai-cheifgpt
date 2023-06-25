@@ -26,8 +26,13 @@ import WriterAIHomeScreen from './screens/home/openai/writerai.home.screen';
 import PromptScreen from './screens/home/openai/prompt.screen';
 import PromptDetailScreen from './screens/home/openai/prompt.detail.screen';
 
+import AppMetrica from "react-native-appmetrica-next";
+
+import {  useFonts, Manjari_400Regular as Manjari, Manjari_700Bold as ManjariBold } from '@expo-google-fonts/manjari';
+
 import ProfileScreen from './screens/home/profile.screen';
 import ImageView from './screens/home/image.view';
+import Config from './redux/config';
 
 const Stack = createStackNavigator();
 import useColors from './assets/values/colors';
@@ -35,14 +40,22 @@ import { useEffect } from 'react';
 
 const App = () =>  {
   const [Colors, GetColors] = useColors();
-  useEffect(() => { GetColors() }, [])
+  const [fontsLoaded] = useFonts({Manjari, ManjariBold});
+  useEffect(() => { 
+    GetColors();
+    AppMetrica.activate({
+      apiKey: Config.AppMetrica_API_KEY,
+      sessionTimeout: 120,
+      firstActivationAsUpdate: true,
+    });
+  }, [])
 
   return (
     <Provider store={Store}>
       <PaperProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Introduction">
-            <Stack.Screen name="Splash" options={{ headerShown: false }} component={SplashScreen} />
+            {/* <Stack.Screen name="Splash" options={{ headerShown: false }} component={SplashScreen} /> */}
             <Stack.Screen name="Introduction" options={{ headerShown: false }} component={IntroScreen} />
 
             <Stack.Screen name="SignUp" options={{ headerShown: false }} component={SignUpScreen} />

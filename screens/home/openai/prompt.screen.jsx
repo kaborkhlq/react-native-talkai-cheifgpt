@@ -90,7 +90,8 @@ const PromptAI = (props) => {
     });
 
     const onFullScreen = (item, uri) => {
-        props.navigation.push('ImageView', { prompt: item, uri: uri })
+        if(item !== null && item !== undefined && uri !== null && uri !== undefined)
+            props.navigation.push('ImageView', { prompt: item, uri: uri })
     }
 
     useEffect(() => {
@@ -201,7 +202,7 @@ const PromptAI = (props) => {
                 <TouchableOpacity onPress={() => props.navigation.replace('Home')}>
                     <Image tintColor={Colors.bgLight} source={require('../../../assets/drawables/ic_back.png')} style={[styles.icon]} />
                 </TouchableOpacity>
-                <Text style={[GlobalStyle.ManjariBold, styles.title]}>Talk AI Prompts</Text>
+                <Text style={[GlobalStyle.ManjariBold, styles.title]}>AI Image Prompts</Text>
                 <TouchableOpacity onPress={toggleTab}>
                     <FontAwesome5 name="history" size={24} color={Colors.bgLight} />
                 </TouchableOpacity>

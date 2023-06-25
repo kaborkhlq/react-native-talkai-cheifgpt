@@ -6,6 +6,7 @@ import * as Animatable from 'react-native-animatable';
 import * as SecureStore from 'expo-secure-store';
 import { View, Text, TextInput, ImageBackground, Dimensions, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import useCustomerInfo from '../../redux/useCustomerInfo';
+import analytics from '@react-native-firebase/analytics';
 
 import Button from '../../components/button';
 import EditText from '../../components/edittext';
@@ -102,12 +103,14 @@ const SignIn = (props) => {
                             SecureStore.setItemAsync('email', email);
                             SecureStore.setItemAsync('password', password);
                         }
+                        analytics().logLogin({method: 'firebase.com'})
                         GoHome();
                     } else {
                         Toast.show({ type: 'error', position: 'top', text1: 'Confirm Email Verification', text2: 'Please verify your identity!', visibilityTime: 3000, autoHide: true, topOffset: 30, bottomOffset: 40 });
                     }
                 } else {
                     Toast.show({ type: 'success', position: 'top', text1: 'Congratulations!', text2: 'Your action was successful!', visibilityTime: 3000, autoHide: true, topOffset: 30, bottomOffset: 40 });
+                    analytics().logLogin({method: `${AuthReducer.service}.com`})
                     GoHome();
                 }
             } else if(AuthReducer.IS_FAILURE) {

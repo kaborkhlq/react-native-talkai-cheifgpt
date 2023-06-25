@@ -99,7 +99,7 @@ const LicenseScreen = ({navigation}) => {
             setLoading(false);     
         };
 
-        fetchData().catch(console.log);
+        fetchData()
     }, []);
 
     const onSelection = () => {

@@ -136,7 +136,7 @@ const WriterAI = (props) => {
                 <TouchableOpacity onPress={() => props.navigation.replace('Home')}>
                     <Image tintColor={Colors.bgLight} source={require('../../../assets/drawables/ic_back.png')} style={[styles.icon]} />
                 </TouchableOpacity>
-                <Text style={[GlobalStyle.ManjariBold, styles.title]}>Talk AI Writer</Text>
+                <Text style={[GlobalStyle.ManjariBold, styles.title]}>Text AI Prompts</Text>
                 <TouchableOpacity style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center]}>
                     <FontAwesome5 style={{marginRight: 10}} name="coins" size={24} color={Colors.bgLight} />
                     <Text style={[GlobalStyle.ManjariBold, styles.title]}>{AuthReducer.data.credit}</Text>

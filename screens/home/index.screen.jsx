@@ -1,10 +1,11 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import LottieView from 'lottie-react-native';
 import { View, Text, StyleSheet, Dimensions, BackHandler, TouchableOpacity } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { useRewardedAd } from 'react-native-google-mobile-ads';
+import { useInterstitialAd } from 'react-native-google-mobile-ads';
 
+import useCustomerInfo from '../../redux/useCustomerInfo';
 import useTrackEvent from '../../redux/useTrackEvent';
 import useLicensePopup from '../../components/license.modal'
 import { updateCredit } from '../../redux/actions/auth.action';
@@ -16,15 +17,16 @@ import Button from '../../components/button';
 import Config from '../../redux/config';
 const {width, height} = Dimensions.get('window');
 
-const adUnit = Config.Rewarded.AdUnitID;
+const adUnit = Config.Interstitial.AdUnitID;
 const requestOptions = {};
 
 const HomeScreen = (props) => {
     const [Colors, GetColors] = useColors()
     const AuthReducer = useSelector(state => state.AuthReducer);
     const dispatch = useDispatch();
-    const [response, updateTrack] = useTrackEvent();
-    const { isLoaded, isClosed, load, show, isEarnedReward, reward } = useRewardedAd(adUnit, requestOptions)
+    const [customerInfo, getCustomerInfo] = useCustomerInfo();
+    const [_interval, _setInterval] = useState(null);
+    const { isLoaded, isClosed, load, show } = useInterstitialAd(adUnit, requestOptions)
 
     const styles = new StyleSheet.create({
         container: {
@@ -59,18 +61,27 @@ const HomeScreen = (props) => {
 
     useEffect(() => {
         GetColors();
+        getCustomerInfo();
         console.log(AuthReducer.data);
+
+        return () => {
+            clearInterval(_interval)
+            _setInterval(null);
+        }
     }, []);
 
     useEffect(() => {
-        if(isEarnedReward) {
-            dispatch(updateCredit(AuthReducer.data.uid, AuthReducer.data.credit + 1))
-        }
-    }, [isEarnedReward])
+        let interval = setInterval(() => {
+            if(customerInfo !== null && customerInfo.activeSubscriptions.length === 0) load();
+        }, 1000 * 60 * 5)
+        _setInterval(interval);
+    }, [load])
 
     useEffect(() => {
-        if(isLoaded) show();
-    }, [isLoaded])
+        if(isLoaded) {
+            show();
+        }
+    }, [isLoaded, customerInfo]);
 
     const onOpenChat = () => {
         props.navigation.push('ChatAI');

@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, StyleSheet, Image } from 'react-native';
-import {  useFonts, Manjari_400Regular as Manjari, Manjari_700Bold as ManjariBold } from '@expo-google-fonts/manjari';
 import Carousel from 'react-native-snap-carousel';
 import { useAppOpenAd } from 'react-native-google-mobile-ads';
+import analytics from '@react-native-firebase/analytics';
 
 import useCustomerInfo from '../redux/useCustomerInfo';
 import Config from '../redux/config';
@@ -16,7 +16,6 @@ const requestOptions = {};
 
 const IntroScreen = (props) => {
     const [Colors, GetColors] = useColors();
-    const [fontsLoaded] = useFonts({Manjari, ManjariBold});
     const titles = [
         'Help with travel planning',
         'Help in choosing gifts',
@@ -86,7 +85,10 @@ const IntroScreen = (props) => {
         },
         
     });
-    useEffect(() => { GetColors() }, [])
+    useEffect(() => { 
+        GetColors()
+        analytics().logAppOpen()
+     }, [])
     useEffect(() => {
         load();
         getCustomerInfo();
@@ -99,7 +101,6 @@ const IntroScreen = (props) => {
     }, [isClosed]);
 
     useEffect(() => {
-        console.log(isLoaded);
         if(customerInfo !== null && customerInfo.activeSubscriptions.length === 0) {
             if(isLoaded) {
                 if(!gone) show();
@@ -117,7 +118,7 @@ const IntroScreen = (props) => {
 
     _renderItem = ({item, index}) => {
         return (
-            <View style={[{backgroundColor: Colors.background}, GlobalStyle.column, GlobalStyle.column_center, GlobalStyle.row_center, {height: '100%'}]}>
+            <View style={[{backgroundColor: Colors.background}, GlobalStyle.column, GlobalStyle.column_center, GlobalStyle.row_center, GlobalStyle.container]}>
                 <Text style={[GlobalStyle.Manjari, styles.titleStyle]}>{titles[index]}</Text>
                 { index === 0 && (<Image style={[styles.bannerImage]} source={require(`../assets/drawables/intro1.png`)} />) }
                 { index === 1 && (<Image style={[styles.bannerImage]} source={require(`../assets/drawables/intro2.png`)} />) }

@@ -167,16 +167,18 @@ const PromptDetailScreen = (props) => {
                     setPrompt(props.route.params.query)
                 }
             }
-            let timages = await SecureStore.getItemAsync('saved_images')
-            if(timages !== null && timages !== undefined) {
-                let t = JSON.parse(timages), t1;
-                if(t.length > 5) t1 = t.slice(t.length - 6, t.length - 1)
-                else t1 = t;
-                setImages(t1)
-                await SecureStore.setItemAsync('saved_images', JSON.stringify(t1))
-            } else {
-                onMagicShow()
-            }
+            // let timages = await SecureStore.getItemAsync('saved_images')
+            // if(timages !== null && timages !== undefined) {
+            //     let t = JSON.parse(timages), t1;
+            //     if(t.length > 5) t1 = t.slice(t.length - 6, t.length - 1)
+            //     else t1 = t;
+            //     setImages(t1)
+            //     await SecureStore.setItemAsync('saved_images', JSON.stringify(t1))
+            // } else {
+            //     onMagicShow()
+            // }
+
+            onMagicShow()
         }
         
         getCustomerInfo();
@@ -270,7 +272,7 @@ const PromptDetailScreen = (props) => {
                 console.warn(err);
             }
         }
-      };
+    };
     
     const downloadImage = () => {
         let image_URL = previewImage.url;
@@ -353,7 +355,7 @@ const PromptDetailScreen = (props) => {
                 <TouchableOpacity onPress={() => props.navigation.pop()}>
                     <Image tintColor={Colors.bgLight} source={require('../../../assets/drawables/ic_back.png')} style={[styles.icon]} />
                 </TouchableOpacity>
-                <Text style={[GlobalStyle.ManjariBold, styles.title]}>Talk AI Prompts</Text>
+                <Text style={[GlobalStyle.ManjariBold, styles.title]}>AI Image Prompts</Text>
                 <View style={[GlobalStyle.row, GlobalStyle.column_center, GlobalStyle.row_center]}>
                     <FontAwesome5 style={{marginRight: 10}} name="coins" size={24} color={Colors.bgLight} />
                     <Text style={[GlobalStyle.ManjariBold, styles.title]}>{AuthReducer.data.credit}</Text>
@@ -361,7 +363,7 @@ const PromptDetailScreen = (props) => {
             </View>
             <View style={[GlobalStyle.row_center, GlobalStyle.column_center, styles.preview]}>
                 { Object.keys(previewImage).length > 0 && (
-                    <TouchableOpacity onPress={() => onFullScreen(previewImage.prompt, previewImage.uri)}>
+                    <TouchableOpacity onPress={() => onFullScreen(previewImage.prompt, previewImage.url)}>
                         <Image style={{ width: width / 1.1, height: width / 1.1, resizeMode: 'stretch', borderRadius: 10 }} source={{ uri: previewImage.url }} />
                     </TouchableOpacity>
                 ) }
@@ -369,7 +371,7 @@ const PromptDetailScreen = (props) => {
                     <TouchableOpacity onPress={handleDownload} style={{justifyContent: 'center', alignItems:'center', width: 50, height: 50, overflow: 'hidden', position: 'absolute', top: 10, right: 10, backgroundColor: Colors.bgLight, borderRadius: 100}}>
                         <LottieView
                             ref={_favorite}
-                            style={{width: 80, borderRadius: 100, backgroundColor: Colors.bgDark }}
+                            style={{width: 80, borderRadius: 100, backgroundColor: Colors.bgLight }}
                             source={require('../../../assets/82387-download.json')}
                             loop={false}
                             autoPlay={false}
