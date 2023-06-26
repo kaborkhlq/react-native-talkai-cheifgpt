@@ -3,10 +3,8 @@ import { Provider } from 'react-redux';
 import 'react-native-url-polyfill/auto';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import {
-  PaperProvider
-} from 'react-native-paper';
+      
+import { PaperProvider } from 'react-native-paper';
 
 import Colors from './assets/values/colors';
 import SplashScreen from './screens/splash.screen';
