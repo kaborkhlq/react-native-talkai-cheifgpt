@@ -43,13 +43,8 @@ Don't miss out on the opportunity to explore the world of Talk AI chat, interact
 
 <br/><br/>
 
-# CometChat Kitchen Sink Sample App (React Native)
+# Talk AI - Chat & Art Creator (React Native)
 
-[![Platform](https://img.shields.io/badge/Platform-ReactNative-brightgreen)](#)
-![GitHub repo size](https://img.shields.io/github/repo-size/DevWizard0000/react-native-talkai-cheifgpt)
-![GitHub contributors](https://img.shields.io/github/contributors/DevWizard0000/react-native-talkai-cheifgpt)
-![GitHub stars](https://img.shields.io/github/stars/DevWizard0000/react-native-talkai-cheifgpt?style=social)
-![Twitter Follow](https://img.shields.io/twitter/follow/cometchat?style=social)
 </br></br>
 
 <div style="width:100%">
