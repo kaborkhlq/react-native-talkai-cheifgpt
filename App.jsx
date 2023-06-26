@@ -5,12 +5,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { PaperProvider } from 'react-native-paper';
 
-import Colors from './assets/values/colors';
-import SplashScreen from './screens/splash.screen';
-import IntroScreen from './screens/intro.screen';
-
 import Store from './redux/store';
 
+import IntroScreen from './screens/intro.screen';
 import SignUpScreen from './screens/auth/signup.screen';
 import SignInScreen from './screens/auth/signin.screen';
 
