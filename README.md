@@ -59,7 +59,7 @@ Don't miss out on the opportunity to explore the world of Talk AI chat, interact
             <img align="left" width="200" height="350" alt="Main2" src="./screenshots/2.webp">    
             <img align="left" width="200" height="350" alt="Main3" src="./screenshots/3.webp">    
             <img align="left" width="200" height="350" alt="Main4" src="./screenshots/4.webp">    
-            <img align="left" width="1000" height="500" alt="Main5" src="./screenshots/5.webp">    
+            <img align="left" width="1000" height="400" alt="Main5" src="./screenshots/5.webp">    
         </div>    
     </div>    
 </div>
